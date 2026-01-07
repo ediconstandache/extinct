@@ -1,0 +1,48 @@
+.countdown {
+  font-size: 24px;
+  font-weight: bold;
+  color: #d41367;
+}
+
+.time {
+  padding: 0 5px;
+}
+.countdown {
+  font-size: 28px;
+  font-weight: bold;
+  color: #d41367;
+  display: inline-block;
+}
+
+.time {
+  display: inline-block;
+  min-width: 2ch;
+}
+
+.sep {
+  padding: 0 4px;
+}
+
+/* GLITCH MODE */
+.glitch {
+  color: #1b9a24;
+  animation:
+    glitch-shift 0.15s infinite,
+    glitch-skew 0.2s infinite;
+}
+
+@keyframes glitch-shift {
+  0% { transform: translate(0); }
+  20% { transform: translate(-1px, 1px); }
+  40% { transform: translate(1px, -1px); }
+  60% { transform: translate(-2px, 0); }
+  80% { transform: translate(2px, 1px); }
+  100% { transform: translate(0); }
+}
+
+@keyframes glitch-skew {
+  0% { transform: skew(0deg); }
+  50% { transform: skew(2deg); }
+  100% { transform: skew(0deg); }
+}
+
