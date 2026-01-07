@@ -35,7 +35,7 @@ jobs:
       #   working-directory: ./your-angular-folder
 
       - name: Build
-        run: npm run build -- --configuration production --base-href "/extinct/"
+        run: npm run build -- --configuration production --base-href "/"
 
       # ---- IMPORTANT ----
       # Angular output path differs by Angular version / builder.
