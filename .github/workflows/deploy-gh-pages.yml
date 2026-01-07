@@ -1,0 +1,58 @@
+name: Deploy Angular to GitHub Pages
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      # If your Angular project is NOT in the repo root, set working-directory accordingly:
+      # - name: Install dependencies
+      #   run: npm ci
+      #   working-directory: ./your-angular-folder
+
+      - name: Build
+        run: npm run build -- --configuration production
+
+      # ---- IMPORTANT ----
+      # Angular output path differs by Angular version / builder.
+      # Common cases:
+      # 1) dist/<project-name>/browser   (Angular 17+ / application builder)
+      # 2) dist/<project-name>          (older versions)
+      #
+      # Update the "folder" below to match your actual dist output.
+      - name: Deploy to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          # publish_dir: dist
+          # If your output is dist/<project-name>/browser, use:
+          publish_dir: dist/extinct/browser
+          #
+          # Optional: set your custom domain (creates CNAME in gh-pages branch):
+          # cname: extinct.ro
+
