@@ -287,3 +287,39 @@
   text-transform: uppercase;
 }
 
+/* Creepy fading effect for date */
+.creepy-fade {
+  animation: creepyFade 6.5s ease-in-out infinite;
+}
+
+@keyframes creepyFade {
+  0% {
+    opacity: 0.25;
+    letter-spacing: 0.12em;
+    text-shadow: none;
+  }
+
+  35% {
+    opacity: 0.55;
+  }
+
+  55% {
+    opacity: 0.9;
+    letter-spacing: 0.22em;
+    text-shadow:
+      0 0 6px rgba(212, 19, 103, 0.25),
+      0 0 14px rgba(0, 255, 140, 0.18);
+  }
+
+  75% {
+    opacity: 0.4;
+  }
+
+  100% {
+    opacity: 0.25;
+    letter-spacing: 0.12em;
+    text-shadow: none;
+  }
+}
+
+
