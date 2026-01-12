@@ -1,40 +1,43 @@
 <div class="page">
-  <!-- Background layers -->
+  <!-- Background -->
   <div class="bg" aria-hidden="true">
-    <div class="layer glow glow-red"></div>
-    <div class="layer glow glow-green"></div>
+    <div class="sky"></div>
+    <div class="ruins ruins-left"></div>
+    <div class="ruins ruins-right"></div>
 
-    <div class="layer fog fog-1"></div>
-    <div class="layer fog fog-2"></div>
+    <div class="fog fog-back"></div>
+    <div class="fog fog-front"></div>
 
-    <!-- lightning overlay is toggled by TS for random strike feel -->
-    <div class="layer lightning" [class.active]="lightning"></div>
+    <!-- lightning: left & right independently -->
+    <div class="lightning lightning-left" [class.active]="lightningLeft"></div>
+    <div class="lightning lightning-right" [class.active]="lightningRight"></div>
 
-    <div class="layer grain"></div>
-    <div class="layer vignette"></div>
+    <div class="grain"></div>
+    <div class="vignette"></div>
   </div>
 
-  <!-- Foreground -->
+  <!-- Foreground text (no box) -->
   <div class="content">
+    <div class="title">WORK IN PROGRESS</div>
+    <div class="line"></div>
+
     <div class="countdown" [class.glitch]="glitch">
-      <span class="time">{{ days }}d</span>
+      <span class="time days">{{ days }}d</span>
       <span class="sep">:</span>
-      <span class="time">{{ hours }}h</span>
+      <span class="time hours">{{ hours | number: '2.0-0' }}h</span>
       <span class="sep">:</span>
-      <span class="time">{{ minutes }}m</span>
+      <span class="time mins">{{ minutes | number: '2.0-0' }}m</span>
       <span class="sep">:</span>
-      <span class="time">{{ seconds }}s</span>
+      <span class="time secs">{{ seconds | number: '2.0-0' }}s</span>
     </div>
 
-    <div class="subtitle">
-    🚧 Work in progress<br />
-  <span>Come back soon</span>
+    <div class="line"></div>
 
-<div class="meta">
-  <div class="location">📍 Casa Ștefan – Gura Humorului</div>
-  <div class="date creepy-fade">27 feb – 01 mar</div>
-</div>
-</div>
+    <div class="subtitle">COME BACK SOON</div>
 
+    <div class="meta">
+      <div class="location">Casa Ștefan – Gura Humorului</div>
+      <div class="date creepy-fade">27 feb – 01 mar</div>
+    </div>
   </div>
 </div>
