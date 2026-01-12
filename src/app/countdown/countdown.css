@@ -16,6 +16,7 @@
 
   /* your generated background image */
 
+  background: url("/background.png") center / cover no-repeat;
   /* keep it slightly lifted (not crushed blacks) */
   filter: contrast(1.03) saturate(1.0) brightness(1.06);
 }
