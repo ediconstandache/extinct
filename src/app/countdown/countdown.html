@@ -1,46 +1,43 @@
 <div class="page" [class.shake]="shake">
+  <!-- Background image + overlays -->
+  <div class="bg" aria-hidden="true">
+    <!-- animated fog over everything -->
+    <div class="fog fog-back"></div>
+    <div class="fog fog-front"></div>
 
-  <!-- Background -->
-<div class="bg" aria-hidden="true">
-  <div class="sky"></div>
+    <!-- lightning both sides -->
+    <div
+      class="lightning lightning-left"
+      [class.active]="lightningLeft"
+      [class.red]="lightningLeftColor === 'red'"
+      [class.green]="lightningLeftColor === 'green'">
+    </div>
 
-  <div class="ruins ruins-left"></div>
-  <div class="ruins ruins-right"></div>
+    <div
+      class="lightning lightning-right"
+      [class.active]="lightningRight"
+      [class.red]="lightningRightColor === 'red'"
+      [class.green]="lightningRightColor === 'green'">
+    </div>
 
-  <!-- fog should sit over ruins -->
-  <div class="fog fog-back"></div>
-  <div class="fog fog-front"></div>
+    <!-- grain + vignette -->
+    <div class="grain"></div>
+    <div class="vignette"></div>
+  </div>
 
-<div class="lightning lightning-left"
-     [class.active]="lightningLeft"
-     [class.red]="lightningLeftColor === 'red'"
-     [class.green]="lightningLeftColor === 'green'">
-</div>
-
-<div class="lightning lightning-right"
-     [class.active]="lightningRight"
-     [class.red]="lightningRightColor === 'red'"
-     [class.green]="lightningRightColor === 'green'">
-</div>
-
-  <div class="grain"></div>
-  <div class="vignette"></div>
-</div>
-
-
-  <!-- Foreground text (no box) -->
+  <!-- Foreground -->
   <div class="content">
     <div class="title">WORK IN PROGRESS</div>
     <div class="line"></div>
 
     <div class="countdown" [class.glitch]="glitch">
-      <span class="time days">{{ days }}d</span>
+      <span class="time">{{ days }}d</span>
       <span class="sep">:</span>
-      <span class="time hours">{{ hours | number: '2.0-0' }}h</span>
+      <span class="time">{{ hours }}h</span>
       <span class="sep">:</span>
-      <span class="time mins">{{ minutes | number: '2.0-0' }}m</span>
+      <span class="time">{{ minutes }}m</span>
       <span class="sep">:</span>
-      <span class="time secs">{{ seconds | number: '2.0-0' }}s</span>
+      <span class="time">{{ seconds }}s</span>
     </div>
 
     <div class="line"></div>

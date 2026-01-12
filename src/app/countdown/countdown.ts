@@ -10,14 +10,19 @@ import { CommonModule } from '@angular/common';
 })
 export class Countdown implements OnInit, OnDestroy {
   days = 0;
-  hours = 0;
-  minutes = 0;
-  seconds = 0;
+  hours = '00';
+  minutes = '00';
+  seconds = '00';
 
   glitch = false;
 
   lightningLeft = false;
   lightningRight = false;
+
+  lightningLeftColor: 'red' | 'green' | null = null;
+  lightningRightColor: 'red' | 'green' | null = null;
+
+  shake = false;
 
   private intervalId: any;
   private glitchTimeoutId: any;
@@ -25,11 +30,6 @@ export class Countdown implements OnInit, OnDestroy {
 
   private targetDate = new Date('February 27, 2026 19:00:00');
 
-shake = false;
-
-lightningLeftColor: 'red' | 'green' | null = null;
-lightningRightColor: 'red' | 'green' | null = null;
-  
   ngOnInit() {
     this.updateCountdown();
     this.intervalId = setInterval(() => this.updateCountdown(), 1000);
@@ -49,15 +49,21 @@ lightningRightColor: 'red' | 'green' | null = null;
     const distance = this.targetDate.getTime() - now;
 
     if (distance <= 0) {
-      this.days = this.hours = this.minutes = this.seconds = 0;
+      this.days = 0;
+      this.hours = this.minutes = this.seconds = '00';
       clearInterval(this.intervalId);
       return;
     }
 
     this.days = Math.floor(distance / (1000 * 60 * 60 * 24));
-    this.hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    this.minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-    this.seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+    const h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    const s = Math.floor((distance % (1000 * 60)) / 1000);
+
+    this.hours = String(h).padStart(2, '0');
+    this.minutes = String(m).padStart(2, '0');
+    this.seconds = String(s).padStart(2, '0');
   }
 
   private scheduleRandomGlitch() {
@@ -74,7 +80,7 @@ lightningRightColor: 'red' | 'green' | null = null;
     setTimeout(() => (this.glitch = false), glitchDuration);
   }
 
-  // Lightning: random side, clustered flashes (more realistic)
+  // --- LIGHTNING (left/right + red/green) ---
   private scheduleRandomLightning() {
     const nextStrikeIn = Math.random() * 11000 + 1200; // 1.2–12s
     this.lightningTimeoutId = setTimeout(() => {
@@ -83,56 +89,51 @@ lightningRightColor: 'red' | 'green' | null = null;
     }, nextStrikeIn);
   }
 
-private triggerLightningCluster() {
-  const flashes = Math.floor(Math.random() * 3) + 2; // 2–4
-  const side = Math.random() < 0.5 ? 'left' : 'right';
-  const color: 'red' | 'green' = Math.random() < 0.5 ? 'red' : 'green';
+  private triggerLightningCluster() {
+    const flashes = Math.floor(Math.random() * 3) + 2; // 2–4
+    const side: 'left' | 'right' = Math.random() < 0.5 ? 'left' : 'right';
+    const color: 'red' | 'green' = Math.random() < 0.5 ? 'red' : 'green';
 
-  // set color on the chosen side
-  if (side === 'left') {
-    this.lightningLeftColor = color;
-  } else {
-    this.lightningRightColor = color;
+    if (side === 'left') this.lightningLeftColor = color;
+    else this.lightningRightColor = color;
+
+    let i = 0;
+
+    const doFlash = () => {
+      if (i === 0) this.triggerShake();
+
+      if (side === 'left') this.lightningLeft = true;
+      else this.lightningRight = true;
+
+      // optional: tiny glitch sync with lightning sometimes
+      if (Math.random() > 0.6) {
+        this.glitch = true;
+        setTimeout(() => (this.glitch = false), 120);
+      }
+
+      const onMs = Math.random() * 120 + 90;  // 90–210ms
+      const offMs = Math.random() * 140 + 70; // 70–210ms
+
+      setTimeout(() => {
+        if (side === 'left') this.lightningLeft = false;
+        else this.lightningRight = false;
+
+        i++;
+        if (i < flashes) {
+          setTimeout(doFlash, offMs);
+        } else {
+          // clear color after cluster
+          if (side === 'left') this.lightningLeftColor = null;
+          else this.lightningRightColor = null;
+        }
+      }, onMs);
+    };
+
+    doFlash();
   }
 
-  let i = 0;
-
-  const doFlash = () => {
-    // camera shake on first flash (subtle)
-    if (i === 0) this.triggerShake();
-
-    if (side === 'left') this.lightningLeft = true;
-    else this.lightningRight = true;
-
-    // optional: tiny glitch during lightning
-    if (Math.random() > 0.55) {
-      this.glitch = true;
-      setTimeout(() => (this.glitch = false), 120);
-    }
-
-    const onMs = Math.random() * 120 + 90;   // 90–210ms
-    const offMs = Math.random() * 140 + 70;  // 70–210ms
-
-    setTimeout(() => {
-      if (side === 'left') this.lightningLeft = false;
-      else this.lightningRight = false;
-
-      i++;
-      if (i < flashes) {
-        setTimeout(doFlash, offMs);
-      } else {
-        // clear color after the cluster ends
-        if (side === 'left') this.lightningLeftColor = null;
-        else this.lightningRightColor = null;
-      }
-    }, onMs);
-  };
-
-  doFlash();
-}
-
-private triggerShake() {
-  this.shake = true;
-  setTimeout(() => (this.shake = false), 260);
-}
+  private triggerShake() {
+    this.shake = true;
+    setTimeout(() => (this.shake = false), 260);
+  }
 }
