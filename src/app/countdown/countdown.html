@@ -1,4 +1,5 @@
-<div class="page">
+<div class="page" [class.shake]="shake">
+
   <!-- Background -->
 <div class="bg" aria-hidden="true">
   <div class="sky"></div>
@@ -10,8 +11,17 @@
   <div class="fog fog-back"></div>
   <div class="fog fog-front"></div>
 
-  <div class="lightning lightning-left" [class.active]="lightningLeft"></div>
-  <div class="lightning lightning-right" [class.active]="lightningRight"></div>
+<div class="lightning lightning-left"
+     [class.active]="lightningLeft"
+     [class.red]="lightningLeftColor === 'red'"
+     [class.green]="lightningLeftColor === 'green'">
+</div>
+
+<div class="lightning lightning-right"
+     [class.active]="lightningRight"
+     [class.red]="lightningRightColor === 'red'"
+     [class.green]="lightningRightColor === 'green'">
+</div>
 
   <div class="grain"></div>
   <div class="vignette"></div>
