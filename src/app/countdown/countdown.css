@@ -15,7 +15,7 @@
   z-index: 0;
 
   /* your generated background image */
-  background: url("/assets/apocalypse-bg.png") center / cover no-repeat;
+  background: url("/assets/background.png") center / cover no-repeat;
 
   /* keep it slightly lifted (not crushed blacks) */
   filter: contrast(1.03) saturate(1.0) brightness(1.06);
@@ -337,4 +337,10 @@
   0% { transform: skew(0deg); }
   50% { transform: skew(2deg); }
   100% { transform: skew(0deg); }
+}
+
+@media (max-width: 600px) {
+  .bg {
+    background-position: center 60%;
+  }
 }
