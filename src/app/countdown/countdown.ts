@@ -22,6 +22,43 @@ export class Countdown implements OnInit, OnDestroy {
   lightningLeftColor: 'red' | 'green' | null = null;
   lightningRightColor: 'red' | 'green' | null = null;
 
+
+  names: string[] = [
+  'Tudor',
+  'Roberta',
+  'Alexia',
+  'Alin',
+  'Gelu',
+  'Maria',
+  'Mary',
+  'Raluca',
+  'Petru',
+  'Anca',
+  'Andrei',
+  'Andrei',
+  'Luca',
+  'Victor',
+  'Eduard',
+  'Andrei',
+  'Anastasia',
+  'Ilinca',
+  'Ilinca',
+  'Lucia',
+  'Mihai',
+  'Diana-Elena',
+  'Tiberiu',
+  'Maria Teodora',
+  'Stefan',
+  'Vlad',
+  'Daria Ilinca',
+  'Andrada',
+  'Laura'
+];
+
+currentName = '...';
+  
+private nameIntervalId: any;
+  
   shake = false;
 
   private intervalId: any;
@@ -36,13 +73,26 @@ export class Countdown implements OnInit, OnDestroy {
 
     this.scheduleRandomGlitch();
     this.scheduleRandomLightning();
+
+    
+  // 🔥 pornește schimbarea numelui
+  this.pickRandomName();
+  this.nameIntervalId = setInterval(() => {
+    this.pickRandomName();
+  }, 500); // 0.5 secunde
   }
 
   ngOnDestroy() {
     clearInterval(this.intervalId);
     clearTimeout(this.glitchTimeoutId);
     clearTimeout(this.lightningTimeoutId);
+  clearInterval(this.nameIntervalId);
   }
+
+  private pickRandomName() {
+  const index = Math.floor(Math.random() * this.names.length);
+  this.currentName = this.names[index];
+}
 
   private updateCountdown() {
     const now = Date.now();
