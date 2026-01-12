@@ -25,6 +25,11 @@ export class Countdown implements OnInit, OnDestroy {
 
   private targetDate = new Date('February 27, 2026 19:00:00');
 
+shake = false;
+
+lightningLeftColor: 'red' | 'green' | null = null;
+lightningRightColor: 'red' | 'green' | null = null;
+  
   ngOnInit() {
     this.updateCountdown();
     this.intervalId = setInterval(() => this.updateCountdown(), 1000);
@@ -78,33 +83,56 @@ export class Countdown implements OnInit, OnDestroy {
     }, nextStrikeIn);
   }
 
-  private triggerLightningCluster() {
-    const flashes = Math.floor(Math.random() * 3) + 2; // 2–4 flashes
-    const side = Math.random() < 0.5 ? 'left' : 'right';
+private triggerLightningCluster() {
+  const flashes = Math.floor(Math.random() * 3) + 2; // 2–4
+  const side = Math.random() < 0.5 ? 'left' : 'right';
+  const color: 'red' | 'green' = Math.random() < 0.5 ? 'red' : 'green';
 
-    let i = 0;
-    const doFlash = () => {
-      if (side === 'left') this.lightningLeft = true;
-      else this.lightningRight = true;
-
-      // optional: tiny glitch during lightning for extra creep
-      if (Math.random() > 0.55) {
-        this.glitch = true;
-        setTimeout(() => (this.glitch = false), 120);
-      }
-
-      const onMs = Math.random() * 120 + 90;   // 90–210ms
-      const offMs = Math.random() * 140 + 70;  // 70–210ms
-
-      setTimeout(() => {
-        if (side === 'left') this.lightningLeft = false;
-        else this.lightningRight = false;
-
-        i++;
-        if (i < flashes) setTimeout(doFlash, offMs);
-      }, onMs);
-    };
-
-    doFlash();
+  // set color on the chosen side
+  if (side === 'left') {
+    this.lightningLeftColor = color;
+  } else {
+    this.lightningRightColor = color;
   }
+
+  let i = 0;
+
+  const doFlash = () => {
+    // camera shake on first flash (subtle)
+    if (i === 0) this.triggerShake();
+
+    if (side === 'left') this.lightningLeft = true;
+    else this.lightningRight = true;
+
+    // optional: tiny glitch during lightning
+    if (Math.random() > 0.55) {
+      this.glitch = true;
+      setTimeout(() => (this.glitch = false), 120);
+    }
+
+    const onMs = Math.random() * 120 + 90;   // 90–210ms
+    const offMs = Math.random() * 140 + 70;  // 70–210ms
+
+    setTimeout(() => {
+      if (side === 'left') this.lightningLeft = false;
+      else this.lightningRight = false;
+
+      i++;
+      if (i < flashes) {
+        setTimeout(doFlash, offMs);
+      } else {
+        // clear color after the cluster ends
+        if (side === 'left') this.lightningLeftColor = null;
+        else this.lightningRightColor = null;
+      }
+    }, onMs);
+  };
+
+  doFlash();
+}
+
+private triggerShake() {
+  this.shake = true;
+  setTimeout(() => (this.shake = false), 260);
+}
 }
