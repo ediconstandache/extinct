@@ -1,8 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-countdown',
   standalone: true,
+  imports: [CommonModule], // 👈 ADD THIS
   templateUrl: './countdown.html',
   styleUrls: ['./countdown.css']
 })
