@@ -45,12 +45,12 @@ export class Countdown implements OnInit, OnDestroy {
   'Ilinca',
   'Lucia',
   'Mihai',
-  'Diana-Elena',
+  'Diana',
   'Tiberiu',
-  'Maria Teodora',
+  'Maria',
   'Stefan',
   'Vlad',
-  'Daria Ilinca',
+  'Ilinca',
   'Andrada',
   'Laura'
 ];
