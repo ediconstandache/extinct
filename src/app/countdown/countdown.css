@@ -15,7 +15,7 @@
   z-index: 0;
 
   /* your generated background image */
-  background: url("/assets/background.png") center / cover no-repeat;
+  background: url("assets/background.png") center / cover no-repeat;
 
   /* keep it slightly lifted (not crushed blacks) */
   filter: contrast(1.03) saturate(1.0) brightness(1.06);
@@ -215,49 +215,86 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 18px;
 
   text-align: center;
-  padding: 20px;
+
+  /* safe area + responsive padding */
+  padding:
+    max(16px, env(safe-area-inset-top))
+    max(14px, env(safe-area-inset-right))
+    max(16px, env(safe-area-inset-bottom))
+    max(14px, env(safe-area-inset-left));
+
+  /* responsive spacing */
+  gap: clamp(10px, 2.2vh, 18px);
 }
 
 /* darker / ominous title */
 .title {
   font-weight: 800;
-  letter-spacing: 0.14em;
   text-transform: uppercase;
-  font-size: clamp(26px, 4.0vw, 54px);
+  font-size: clamp(20px, 5vw, 54px);
+
+  /* responsive tracking */
+  letter-spacing: clamp(0.06em, 0.8vw, 0.14em);
+
   color: rgba(255,255,255,0.62);
   text-shadow: 0 0 18px rgba(0,0,0,0.45);
+
+  /* prevent overflow */
+  max-width: min(92vw, 680px);
+  word-break: break-word;
 }
 
+.subtitle {
+  font-weight: 800;
+  text-transform: uppercase;
+  font-size: clamp(12px, 3.2vw, 22px);
+
+  letter-spacing: clamp(0.10em, 1.0vw, 0.22em);
+
+  color: rgba(255,255,255,0.80);
+  text-shadow: 0 0 16px rgba(255,255,255,0.10);
+
+  max-width: min(92vw, 680px);
+  word-break: break-word;
+}
+
+
 .line {
-  width: min(560px, 78vw);
+  width: min(520px, 86vw);
   height: 2px;
   background: linear-gradient(to right, transparent, rgba(255,255,255,0.30), transparent);
   opacity: 0.9;
 }
 
+
 /* Countdown single reddish color */
 .countdown {
   font-weight: 900;
-  font-size: clamp(34px, 6vw, 88px);
-  letter-spacing: 0.06em;
+  font-size: clamp(26px, 8vw, 88px);
+  letter-spacing: clamp(0.02em, 0.8vw, 0.06em);
 
   display: flex;
+  flex-wrap: wrap;                 /* ✅ allow wrapping */
   align-items: baseline;
   justify-content: center;
-  gap: 12px;
+
+  gap: clamp(6px, 1.6vw, 12px);
 
   color: rgba(255, 80, 100, 0.95);
   text-shadow:
     0 0 18px rgba(255, 40, 80, 0.25),
     0 0 34px rgba(0,0,0,0.35);
+
+  /* prevent overflow */
+  max-width: 94vw;
 }
 
 .time {
-  display: inline-block;
-  min-width: 3ch;
+  display: inline-flex;
+  align-items: baseline;
+  white-space: nowrap;             /* keep "12h" together */
 }
 
 .sep {
@@ -265,36 +302,37 @@
   opacity: 0.75;
 }
 
-/* Subtitle */
-.subtitle {
-  font-weight: 800;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  font-size: clamp(14px, 1.6vw, 22px);
-  color: rgba(255,255,255,0.80);
-  text-shadow: 0 0 16px rgba(255,255,255,0.10);
-}
+
+
 
 .meta {
-  margin-top: 4px;
+  margin-top: 2px;
   display: flex;
   flex-direction: column;
   gap: 6px;
+  max-width: min(92vw, 560px);
 }
 
 .location {
-  font-size: clamp(12px, 1.2vw, 16px);
-  letter-spacing: 0.06em;
+  font-size: clamp(11px, 3.2vw, 16px);
+  letter-spacing: clamp(0.03em, 0.6vw, 0.06em);
   color: rgba(255,255,255,0.72);
   text-shadow: 0 0 12px rgba(0,0,0,0.35);
+
+  line-height: 1.25;
+  word-break: break-word;
 }
 
 .date {
-  font-size: clamp(12px, 1.1vw, 15px);
-  letter-spacing: 0.18em;
+  font-size: clamp(11px, 3.0vw, 15px);
+  letter-spacing: clamp(0.10em, 0.9vw, 0.18em);
   text-transform: uppercase;
   color: rgba(255,255,255,0.55);
+
+  line-height: 1.25;
+  word-break: break-word;
 }
+
 
 /* Creepy fade for date */
 .creepy-fade {
