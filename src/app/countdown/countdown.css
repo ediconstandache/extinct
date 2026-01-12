@@ -229,34 +229,43 @@
   gap: clamp(10px, 2.2vh, 18px);
 }
 
-/* darker / ominous title */
+.title-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
 .title {
   font-weight: 800;
   text-transform: uppercase;
-  font-size: clamp(20px, 5vw, 54px);
 
-  /* responsive tracking */
-  letter-spacing: clamp(0.06em, 0.8vw, 0.14em);
+  /* responsive & compact */
+  font-size: clamp(14px, 4vw, 32px);
+  letter-spacing: clamp(0.04em, 0.6vw, 0.10em);
 
   color: rgba(255,255,255,0.62);
   text-shadow: 0 0 18px rgba(0,0,0,0.45);
 
-  /* prevent overflow */
-  max-width: min(92vw, 680px);
-  word-break: break-word;
+  /* force single row */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  /* responsive width */
+  max-width: 94vw;
 }
 
 .subtitle {
   font-weight: 800;
   text-transform: uppercase;
-  font-size: clamp(12px, 3.2vw, 22px);
+  max-width: 94vw;
+  font-size: clamp(14px, 4vw, 32px);
 
   letter-spacing: clamp(0.10em, 1.0vw, 0.22em);
 
   color: rgba(255,255,255,0.80);
   text-shadow: 0 0 16px rgba(255,255,255,0.10);
 
-  max-width: min(92vw, 680px);
   word-break: break-word;
 }
 
