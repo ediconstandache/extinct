@@ -1,12 +1,19 @@
-.countdown {
-  font-size: 24px;
-  font-weight: bold;
-  color: #d41367;
+/* Full-page centering */
+.page {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff; /* or dark if you want */
 }
 
-.time {
-  padding: 0 5px;
+/* Stack timer + text */
+.content {
+  text-align: center;
 }
+
+/* TIMER */
 .countdown {
   font-size: 28px;
   font-weight: bold;
@@ -17,10 +24,27 @@
 .time {
   display: inline-block;
   min-width: 2ch;
+  padding: 0 5px;
 }
 
 .sep {
   padding: 0 4px;
+}
+
+/* SUBTITLE */
+.subtitle {
+  margin-top: 16px;
+  font-size: 14px;
+  color: #555;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.subtitle span {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: #888;
 }
 
 /* GLITCH MODE */
@@ -45,4 +69,3 @@
   50% { transform: skew(2deg); }
   100% { transform: skew(0deg); }
 }
-
