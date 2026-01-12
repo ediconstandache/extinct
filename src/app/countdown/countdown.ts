@@ -13,9 +13,11 @@ export class Countdown implements OnInit, OnDestroy {
   seconds = 0;
 
   glitch = false;
+  lightning = false;
 
   private intervalId: any;
   private glitchTimeoutId: any;
+  private lightningTimeoutId: any;
 
   private targetDate = new Date('February 27, 2026 19:00:00');
 
@@ -24,11 +26,13 @@ export class Countdown implements OnInit, OnDestroy {
     this.intervalId = setInterval(() => this.updateCountdown(), 1000);
 
     this.scheduleRandomGlitch();
+    this.scheduleRandomLightning();
   }
 
   ngOnDestroy() {
     clearInterval(this.intervalId);
     clearTimeout(this.glitchTimeoutId);
+    clearTimeout(this.lightningTimeoutId);
   }
 
   private updateCountdown() {
@@ -64,5 +68,45 @@ export class Countdown implements OnInit, OnDestroy {
     setTimeout(() => {
       this.glitch = false;
     }, glitchDuration);
+  }
+
+  // --- LIGHTNING ---
+  private scheduleRandomLightning() {
+    const nextStrikeIn = Math.random() * 11000 + 1000; // 1–12s
+
+    this.lightningTimeoutId = setTimeout(() => {
+      this.triggerLightning();
+      this.scheduleRandomLightning();
+    }, nextStrikeIn);
+  }
+
+  private triggerLightning() {
+    // quick cluster of flashes feels more real than one flash
+    const flashes = Math.floor(Math.random() * 3) + 2; // 2–4 flashes
+    let i = 0;
+
+    const doFlash = () => {
+      this.lightning = true;
+
+      // optional: momentary glitch sync during lightning
+      if (Math.random() > 0.6) {
+        this.glitch = true;
+        setTimeout(() => (this.glitch = false), 120);
+      }
+
+      const onMs = Math.random() * 120 + 80; // 80–200ms
+      const offMs = Math.random() * 120 + 60; // 60–180ms
+
+      setTimeout(() => {
+        this.lightning = false;
+
+        i++;
+        if (i < flashes) {
+          setTimeout(doFlash, offMs);
+        }
+      }, onMs);
+    };
+
+    doFlash();
   }
 }
