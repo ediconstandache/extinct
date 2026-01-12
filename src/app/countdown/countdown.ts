@@ -13,7 +13,9 @@ export class Countdown implements OnInit, OnDestroy {
   seconds = 0;
 
   glitch = false;
-  lightning = false;
+
+  lightningLeft = false;
+  lightningRight = false;
 
   private intervalId: any;
   private glitchTimeoutId: any;
@@ -53,7 +55,6 @@ export class Countdown implements OnInit, OnDestroy {
 
   private scheduleRandomGlitch() {
     const nextGlitchIn = Math.random() * 9000 + 1000; // 1–10s
-
     this.glitchTimeoutId = setTimeout(() => {
       this.triggerGlitch();
       this.scheduleRandomGlitch();
@@ -62,48 +63,43 @@ export class Countdown implements OnInit, OnDestroy {
 
   private triggerGlitch() {
     this.glitch = true;
-
     const glitchDuration = Math.random() * 300 + 150; // 150–450ms
-
-    setTimeout(() => {
-      this.glitch = false;
-    }, glitchDuration);
+    setTimeout(() => (this.glitch = false), glitchDuration);
   }
 
-  // --- LIGHTNING ---
+  // Lightning: random side, clustered flashes (more realistic)
   private scheduleRandomLightning() {
-    const nextStrikeIn = Math.random() * 11000 + 1000; // 1–12s
-
+    const nextStrikeIn = Math.random() * 11000 + 1200; // 1.2–12s
     this.lightningTimeoutId = setTimeout(() => {
-      this.triggerLightning();
+      this.triggerLightningCluster();
       this.scheduleRandomLightning();
     }, nextStrikeIn);
   }
 
-  private triggerLightning() {
-    // quick cluster of flashes feels more real than one flash
+  private triggerLightningCluster() {
     const flashes = Math.floor(Math.random() * 3) + 2; // 2–4 flashes
+    const side = Math.random() < 0.5 ? 'left' : 'right';
+
     let i = 0;
-
     const doFlash = () => {
-      this.lightning = true;
+      if (side === 'left') this.lightningLeft = true;
+      else this.lightningRight = true;
 
-      // optional: momentary glitch sync during lightning
-      if (Math.random() > 0.6) {
+      // optional: tiny glitch during lightning for extra creep
+      if (Math.random() > 0.55) {
         this.glitch = true;
         setTimeout(() => (this.glitch = false), 120);
       }
 
-      const onMs = Math.random() * 120 + 80; // 80–200ms
-      const offMs = Math.random() * 120 + 60; // 60–180ms
+      const onMs = Math.random() * 120 + 90;   // 90–210ms
+      const offMs = Math.random() * 140 + 70;  // 70–210ms
 
       setTimeout(() => {
-        this.lightning = false;
+        if (side === 'left') this.lightningLeft = false;
+        else this.lightningRight = false;
 
         i++;
-        if (i < flashes) {
-          setTimeout(doFlash, offMs);
-        }
+        if (i < flashes) setTimeout(doFlash, offMs);
       }, onMs);
     };
 
