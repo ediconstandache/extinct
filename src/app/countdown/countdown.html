@@ -1,4 +1,20 @@
 <div class="page">
+  <!-- Background layers -->
+  <div class="bg" aria-hidden="true">
+    <div class="layer glow glow-red"></div>
+    <div class="layer glow glow-green"></div>
+
+    <div class="layer fog fog-1"></div>
+    <div class="layer fog fog-2"></div>
+
+    <!-- lightning overlay is toggled by TS for random strike feel -->
+    <div class="layer lightning" [class.active]="lightning"></div>
+
+    <div class="layer grain"></div>
+    <div class="layer vignette"></div>
+  </div>
+
+  <!-- Foreground -->
   <div class="content">
     <div class="countdown" [class.glitch]="glitch">
       <span class="time">{{ days }}d</span>
@@ -11,8 +27,14 @@
     </div>
 
     <div class="subtitle">
-      🚧 Work in progress<br />
-      <span>Come back soon</span>
-    </div>
+    🚧 Work in progress<br />
+  <span>Come back soon</span>
+
+<div class="meta">
+  <div class="location">📍 Casa Ștefan – Gura Humorului</div>
+  <div class="date creepy-fade">27 feb – 01 mar</div>
+</div>
+</div>
+
   </div>
 </div>
