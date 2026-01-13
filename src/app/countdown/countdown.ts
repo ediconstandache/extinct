@@ -55,8 +55,8 @@ export class Countdown implements OnInit, OnDestroy {
    * - between      => proportional progress
    * - after end    => 1
    */
-  private crackStartDate = new Date('January 13, 2026 15:20:00');
-  private crackEndDate   = new Date('January 13, 2026 15:22:00');
+  private crackStartDate = new Date('January 13, 2026 15:28:00');
+  private crackEndDate   = new Date('January 13, 2026 16:00:00');
 
   /**
    * 0..1 used by CSS to reveal the cracked overlay.
