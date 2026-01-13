@@ -1,19 +1,22 @@
+// countdown.ts
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-countdown',
   standalone: true,
-  imports: [CommonModule], // 👈 ADD THIS
+  imports: [CommonModule],
   templateUrl: './countdown.html',
   styleUrls: ['./countdown.css']
 })
 export class Countdown implements OnInit, OnDestroy {
+  // Countdown UI
   days = 0;
   hours = '00';
   minutes = '00';
   seconds = '00';
 
+  // Glitch & lightning
   glitch = false;
 
   lightningLeft = false;
@@ -22,77 +25,102 @@ export class Countdown implements OnInit, OnDestroy {
   lightningLeftColor: 'red' | 'green' | null = null;
   lightningRightColor: 'red' | 'green' | null = null;
 
-
-  names: string[] = [
-  'Tudor',
-  'Roberta',
-  'Alexia',
-  'Alin',
-  'Gelu',
-  'Maria',
-  'Mary',
-  'Raluca',
-  'Petru',
-  'Anca',
-  'Andrei',
-  'Andrei',
-  'Luca',
-  'Victor',
-  'Eduard',
-  'Andrei',
-  'Anastasia',
-  'Ilinca',
-  'Ilinca',
-  'Lucia',
-  'Mihai',
-  'Diana',
-  'Tiberiu',
-  'Maria',
-  'Stefan',
-  'Vlad',
-  'Ilinca',
-  'Andrada',
-  'Laura'
-];
-
-currentName = '...';
-  
-private nameIntervalId: any;
-  
   shake = false;
+
+  // Names
+  names: string[] = [
+    'Tudor','Roberta','Alexia','Alin','Gelu','Maria','Mary','Raluca','Petru','Anca',
+    'Andrei','Andrei','Luca','Victor','Eduard','Andrei','Anastasia','Ilinca','Ilinca',
+    'Lucia','Mihai','Diana','Tiberiu','Maria','Stefan','Vlad','Ilinca','Andrada','Laura'
+  ];
+  currentName = '...';
 
   private intervalId: any;
   private glitchTimeoutId: any;
   private lightningTimeoutId: any;
+  private nameIntervalId: any;
 
+  // =========================
+  // CRACKING AS A COUNTDOWN
+  // =========================
+
+  /**
+   * Set your cracking schedule here.
+   *
+   * - crackStartDate: when the cracking begins (progress 0)
+   * - crackEndDate:   when the cracking is fully done (progress 1)
+   *
+   * If user opens the page anytime:
+   * - before start => 0
+   * - between      => proportional progress
+   * - after end    => 1
+   */
+  private crackStartDate = new Date('January 13, 2026 15:20:00');
+  private crackEndDate   = new Date('January 13, 2026 15:22:00');
+
+  /**
+   * 0..1 used by CSS to reveal the cracked overlay.
+   * Bound to CSS variable: --crackProgress (% in template)
+   */
+  crackProgress = 0;
+
+  // Your actual countdown target (you can keep it same as crackEndDate if you want)
   private targetDate = new Date('February 27, 2026 19:00:00');
 
   ngOnInit() {
-    this.updateCountdown();
-    this.intervalId = setInterval(() => this.updateCountdown(), 1000);
+    this.tick();
+    this.intervalId = setInterval(() => this.tick(), 1000);
 
     this.scheduleRandomGlitch();
     this.scheduleRandomLightning();
 
-    
-  // 🔥 pornește schimbarea numelui
-  this.pickRandomName();
-  this.nameIntervalId = setInterval(() => {
     this.pickRandomName();
-  }, 500); // 0.5 secunde
+    this.nameIntervalId = setInterval(() => this.pickRandomName(), 500);
   }
 
   ngOnDestroy() {
     clearInterval(this.intervalId);
     clearTimeout(this.glitchTimeoutId);
     clearTimeout(this.lightningTimeoutId);
-  clearInterval(this.nameIntervalId);
+    clearInterval(this.nameIntervalId);
+  }
+
+  /** One tick updates both countdown + crack progress */
+  private tick() {
+    this.updateCountdown();
+    this.updateCrackProgress();
+  }
+
+  private updateCrackProgress() {
+    const now = Date.now();
+    const start = this.crackStartDate.getTime();
+    const end = this.crackEndDate.getTime();
+
+    if (end <= start) {
+      // misconfigured range => snap to done
+      this.crackProgress = 1;
+      return;
+    }
+
+    if (now <= start) {
+      this.crackProgress = 0;
+      return;
+    }
+
+    if (now >= end) {
+      this.crackProgress = 1;
+      return;
+    }
+
+    const p = (now - start) / (end - start);
+    // clamp
+    this.crackProgress = Math.max(0, Math.min(1, p));
   }
 
   private pickRandomName() {
-  const index = Math.floor(Math.random() * this.names.length);
-  this.currentName = this.names[index];
-}
+    const index = Math.floor(Math.random() * this.names.length);
+    this.currentName = this.names[index];
+  }
 
   private updateCountdown() {
     const now = Date.now();
@@ -101,7 +129,6 @@ private nameIntervalId: any;
     if (distance <= 0) {
       this.days = 0;
       this.hours = this.minutes = this.seconds = '00';
-      clearInterval(this.intervalId);
       return;
     }
 
@@ -130,7 +157,6 @@ private nameIntervalId: any;
     setTimeout(() => (this.glitch = false), glitchDuration);
   }
 
-  // --- LIGHTNING (left/right + red/green) ---
   private scheduleRandomLightning() {
     const nextStrikeIn = Math.random() * 11000 + 1200; // 1.2–12s
     this.lightningTimeoutId = setTimeout(() => {
@@ -172,7 +198,6 @@ private nameIntervalId: any;
         if (i < flashes) {
           setTimeout(doFlash, offMs);
         } else {
-          // clear color after cluster
           if (side === 'left') this.lightningLeftColor = null;
           else this.lightningRightColor = null;
         }
