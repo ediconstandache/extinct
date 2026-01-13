@@ -2,6 +2,53 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
+/**
+ * Creates a UTC timestamp from a Romania-local date/time (Europe/Bucharest).
+ * DST-safe using Intl timeZone conversion.
+ *
+ * month: 1..12
+ */
+function romaniaToUtc(
+  year: number,
+  month: number,
+  day: number,
+  hour = 0,
+  minute = 0,
+  second = 0
+): number {
+  // First, make a UTC "guess" for the same wall-clock components
+  const utcGuess = Date.UTC(year, month - 1, day, hour, minute, second);
+
+  // Format that instant in Romania time, then read back its parts
+  const roFormatter = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Europe/Bucharest',
+    hour12: false,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit'
+  });
+
+  const parts = roFormatter.formatToParts(new Date(utcGuess));
+  const get = (t: string) => Number(parts.find(p => p.type === t)?.value);
+
+  // Interpret the Romania-local formatted parts as if they were UTC.
+  // The delta between this and utcGuess encodes the Romania offset at that instant.
+  const roAsUtc = Date.UTC(
+    get('year'),
+    get('month') - 1,
+    get('day'),
+    get('hour'),
+    get('minute'),
+    get('second')
+  );
+
+  // Adjust: convert Romania wall-clock -> true UTC
+  return utcGuess - (roAsUtc - utcGuess);
+}
+
 @Component({
   selector: 'app-countdown',
   standalone: true,
@@ -10,13 +57,23 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./countdown.css']
 })
 export class Countdown implements OnInit, OnDestroy {
-  // Countdown UI
+  // =========================
+  // COUNTDOWN DISPLAY
+  // =========================
   days = 0;
   hours = '00';
   minutes = '00';
   seconds = '00';
 
-  // Glitch & lightning
+  // =========================
+  // CRACK PROGRESS (0..1)
+  // Used in HTML as: [style.--crackProgress.%]="crackProgress * 100"
+  // =========================
+  crackProgress = 0;
+
+  // =========================
+  // EFFECTS
+  // =========================
   glitch = false;
 
   lightningLeft = false;
@@ -27,7 +84,9 @@ export class Countdown implements OnInit, OnDestroy {
 
   shake = false;
 
-  // Names
+  // =========================
+  // NAMES
+  // =========================
   names: string[] = [
     'Tudor','Roberta','Alexia','Alin','Gelu','Maria','Mary','Raluca','Petru','Anca',
     'Andrei','Andrei','Luca','Victor','Eduard','Andrei','Anastasia','Ilinca','Ilinca',
@@ -35,45 +94,51 @@ export class Countdown implements OnInit, OnDestroy {
   ];
   currentName = '...';
 
+  // =========================
+  // TIMERS
+  // =========================
   private intervalId: any;
   private glitchTimeoutId: any;
   private lightningTimeoutId: any;
   private nameIntervalId: any;
 
   // =========================
-  // CRACKING AS A COUNTDOWN
+  // EDITABLE DATES (Romania local time)
   // =========================
 
   /**
-   * Set your cracking schedule here.
-   *
-   * - crackStartDate: when the cracking begins (progress 0)
-   * - crackEndDate:   when the cracking is fully done (progress 1)
-   *
-   * If user opens the page anytime:
-   * - before start => 0
-   * - between      => proportional progress
-   * - after end    => 1
+   * Crack starts at this Romania local time.
+   * Change these values to control when cracking begins.
    */
-  private crackStartDate = new Date('January 13, 2026 15:28:00');
-  private crackEndDate   = new Date('January 13, 2026 16:00:00');
+  private crackStartUtc = romaniaToUtc(2026, 1, 13, 15, 35, 0);
 
   /**
-   * 0..1 used by CSS to reveal the cracked overlay.
-   * Bound to CSS variable: --crackProgress (% in template)
+   * Crack completes at this Romania local time (fully cracked).
+   * Change this for your deadline.
    */
-  crackProgress = 0;
+  private crackEndUtc = romaniaToUtc(2026, 1, 13 16, 0, 0);
 
-  // Your actual countdown target (you can keep it same as crackEndDate if you want)
-  private targetDate = new Date('February 27, 2026 19:00:00');
+  /**
+   * Countdown target (Romania local time). Often same as crackEndUtc.
+   * Change if you want different countdown vs crack deadline.
+   */
+  private countdownTargetUtc = romaniaToUtc(2026, 2, 27, 22, 0, 0);
 
+  // =========================
+  // LIFECYCLE
+  // =========================
   ngOnInit() {
+    // Initial render
     this.tick();
+
+    // Update once per second
     this.intervalId = setInterval(() => this.tick(), 1000);
 
+    // Visual effects scheduling
     this.scheduleRandomGlitch();
     this.scheduleRandomLightning();
 
+    // Name cycling
     this.pickRandomName();
     this.nameIntervalId = setInterval(() => this.pickRandomName(), 500);
   }
@@ -85,19 +150,24 @@ export class Countdown implements OnInit, OnDestroy {
     clearInterval(this.nameIntervalId);
   }
 
-  /** One tick updates both countdown + crack progress */
+  // =========================
+  // MAIN TICK
+  // =========================
   private tick() {
     this.updateCountdown();
     this.updateCrackProgress();
   }
 
+  // =========================
+  // CRACK PROGRESS
+  // =========================
   private updateCrackProgress() {
     const now = Date.now();
-    const start = this.crackStartDate.getTime();
-    const end = this.crackEndDate.getTime();
+    const start = this.crackStartUtc;
+    const end = this.crackEndUtc;
 
     if (end <= start) {
-      // misconfigured range => snap to done
+      // misconfigured => snap done
       this.crackProgress = 1;
       return;
     }
@@ -113,18 +183,15 @@ export class Countdown implements OnInit, OnDestroy {
     }
 
     const p = (now - start) / (end - start);
-    // clamp
     this.crackProgress = Math.max(0, Math.min(1, p));
   }
 
-  private pickRandomName() {
-    const index = Math.floor(Math.random() * this.names.length);
-    this.currentName = this.names[index];
-  }
-
+  // =========================
+  // COUNTDOWN
+  // =========================
   private updateCountdown() {
     const now = Date.now();
-    const distance = this.targetDate.getTime() - now;
+    const distance = this.countdownTargetUtc - now;
 
     if (distance <= 0) {
       this.days = 0;
@@ -143,6 +210,17 @@ export class Countdown implements OnInit, OnDestroy {
     this.seconds = String(s).padStart(2, '0');
   }
 
+  // =========================
+  // NAME PICKER
+  // =========================
+  private pickRandomName() {
+    const index = Math.floor(Math.random() * this.names.length);
+    this.currentName = this.names[index];
+  }
+
+  // =========================
+  // GLITCH
+  // =========================
   private scheduleRandomGlitch() {
     const nextGlitchIn = Math.random() * 9000 + 1000; // 1–10s
     this.glitchTimeoutId = setTimeout(() => {
@@ -157,6 +235,9 @@ export class Countdown implements OnInit, OnDestroy {
     setTimeout(() => (this.glitch = false), glitchDuration);
   }
 
+  // =========================
+  // LIGHTNING
+  // =========================
   private scheduleRandomLightning() {
     const nextStrikeIn = Math.random() * 11000 + 1200; // 1.2–12s
     this.lightningTimeoutId = setTimeout(() => {
@@ -181,7 +262,7 @@ export class Countdown implements OnInit, OnDestroy {
       if (side === 'left') this.lightningLeft = true;
       else this.lightningRight = true;
 
-      // optional: tiny glitch sync with lightning sometimes
+      // sometimes sync a tiny glitch
       if (Math.random() > 0.6) {
         this.glitch = true;
         setTimeout(() => (this.glitch = false), 120);
@@ -198,6 +279,7 @@ export class Countdown implements OnInit, OnDestroy {
         if (i < flashes) {
           setTimeout(doFlash, offMs);
         } else {
+          // clear color
           if (side === 'left') this.lightningLeftColor = null;
           else this.lightningRightColor = null;
         }
