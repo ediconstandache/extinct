@@ -110,13 +110,13 @@ export class Countdown implements OnInit, OnDestroy {
    * Crack starts at this Romania local time.
    * Change these values to control when cracking begins.
    */
-  private crackStartUtc = romaniaToUtc(2026, 1, 13, 15, 35, 0);
+  private crackStartUtc = romaniaToUtc(2026, 1, 13, 16, 05, 0);
 
   /**
    * Crack completes at this Romania local time (fully cracked).
    * Change this for your deadline.
    */
-  private crackEndUtc = romaniaToUtc(2026, 1, 13, 16, 0, 0);
+  private crackEndUtc = romaniaToUtc(2026, 1, 13, 16, 35, 0);
 
   /**
    * Countdown target (Romania local time). Often same as crackEndUtc.
