@@ -1,3 +1,4 @@
+/* countdown.css */
 .page {
   position: relative;
   width: 100vw;
@@ -8,21 +9,27 @@
   will-change: transform;
 }
 
-/* Background image */
+/* =========================
+   BACKGROUND STACK
+   ========================= */
 .bg {
   position: absolute;
   inset: 0;
   z-index: 0;
+}
 
-  /* your generated background image */
+/* Base image */
+.bg-base {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
 
   background: url("/background.png") center / cover no-repeat;
-  /* keep it slightly lifted (not crushed blacks) */
   filter: contrast(1.03) saturate(1.0) brightness(1.06);
 }
 
 /* Optional subtle global tint/soft lift on top of image */
-.bg::before {
+.bg-base::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -32,6 +39,47 @@
       rgba(8, 8, 12, 0.30)
     );
   pointer-events: none;
+}
+
+/* Cracked/lava overlay revealed by progress (0..1) */
+.bg-cracked {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+
+  /* your cracked/lava image */
+  background: url("/background-cracked.png") center / cover no-repeat;
+
+  /* emissive feel */
+  mix-blend-mode: screen;
+  filter: brightness(1.05) saturate(1.15) drop-shadow(0 0 16px rgba(255, 60, 80, 0.25));
+
+  /* controlled by TS via CSS variable: --crackProgress (0..100) */
+  opacity: clamp(0, calc(var(--crackProgress) / 100), 1);
+
+  /* A spatial reveal (mask grows) so it doesn’t fade uniformly */
+  -webkit-mask-image: radial-gradient(
+    1200px 520px at 50% 82%,
+    rgba(0,0,0,1) 0%,
+    rgba(0,0,0,1) 35%,
+    rgba(0,0,0,0) 70%
+  );
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: 50% 85%;
+  -webkit-mask-size: calc(10% + (var(--crackProgress) * 2.1%)) calc(10% + (var(--crackProgress) * 2.1%));
+
+  mask-image: radial-gradient(
+    1200px 520px at 50% 82%,
+    rgba(0,0,0,1) 0%,
+    rgba(0,0,0,1) 35%,
+    rgba(0,0,0,0) 70%
+  );
+  mask-repeat: no-repeat;
+  mask-position: 50% 85%;
+  mask-size: calc(10% + (var(--crackProgress) * 2.1%)) calc(10% + (var(--crackProgress) * 2.1%));
+
+  /* smooth when it updates once per second */
+  transition: opacity 0.8s ease, -webkit-mask-size 0.8s ease, mask-size 0.8s ease;
 }
 
 /* =========================
@@ -47,7 +95,6 @@
   height: clamp(46%, 55vh, 78%);
   pointer-events: none;
 
-  /* make it visible and "misty" */
   mix-blend-mode: screen;
   opacity: 1;
   filter: blur(clamp(12px, 2vw, 26px));
@@ -85,13 +132,12 @@
   100% { transform: translate3d(0,0,0) scale(1.02); }
 }
 
-/* Fog boost on small screens (fog looks thinner on mobile) */
 @media (max-width: 560px) {
   .fog-back { opacity: 0.95; }
   .fog-front { opacity: 0.84; }
 }
 
-/* Lightning (left & right) */
+/* Lightning */
 .lightning {
   position: absolute;
   top: 0;
@@ -128,7 +174,6 @@
       transparent 58%);
 }
 
-/* Colored “lighting” glow (not changing the sky) */
 .lightning.red {
   filter: blur(0.6px) drop-shadow(0 0 22px rgba(255, 40, 90, 0.85));
 }
@@ -151,15 +196,13 @@
   100% { opacity: 0; }
 }
 
-/* Grain (more visible) */
+/* Grain */
 .grain {
   position: absolute;
   inset: 0;
   z-index: 4;
   opacity: 0.30;
   pointer-events: none;
-
-  /* screen = bright-only grain (doesn’t muddy scene) */
   mix-blend-mode: screen;
   background-image:
     repeating-linear-gradient(
@@ -204,7 +247,7 @@
 }
 
 /* =========================
-   FOREGROUND (NO BOX)
+   FOREGROUND
    ========================= */
 .content {
   position: absolute;
@@ -218,14 +261,12 @@
 
   text-align: center;
 
-  /* safe area + responsive padding */
   padding:
     max(16px, env(safe-area-inset-top))
     max(14px, env(safe-area-inset-right))
     max(16px, env(safe-area-inset-bottom))
     max(14px, env(safe-area-inset-left));
 
-  /* responsive spacing */
   gap: clamp(10px, 2.2vh, 18px);
 }
 
@@ -238,20 +279,14 @@
 .title {
   font-weight: 800;
   text-transform: uppercase;
-
-  /* responsive & compact */
   font-size: clamp(14px, 4vw, 32px);
   letter-spacing: clamp(0.04em, 0.6vw, 0.10em);
-
   color: rgba(255,255,255,0.62);
   text-shadow: 0 0 18px rgba(0,0,0,0.45);
 
-  /* force single row */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-
-  /* responsive width */
   max-width: 94vw;
 }
 
@@ -260,15 +295,11 @@
   text-transform: uppercase;
   max-width: 94vw;
   font-size: clamp(14px, 4vw, 32px);
-
   letter-spacing: clamp(0.10em, 1.0vw, 0.22em);
-
   color: rgba(255,255,255,0.80);
   text-shadow: 0 0 16px rgba(255,255,255,0.10);
-
   word-break: break-word;
 }
-
 
 .line {
   width: min(520px, 86vw);
@@ -277,7 +308,6 @@
   opacity: 0.9;
 }
 
-
 /* Countdown single reddish color */
 .countdown {
   font-weight: 900;
@@ -285,7 +315,7 @@
   letter-spacing: clamp(0.02em, 0.8vw, 0.06em);
 
   display: flex;
-  flex-wrap: wrap;                 /* ✅ allow wrapping */
+  flex-wrap: wrap;
   align-items: baseline;
   justify-content: center;
 
@@ -296,23 +326,19 @@
     0 0 18px rgba(255, 40, 80, 0.25),
     0 0 34px rgba(0,0,0,0.35);
 
-  /* prevent overflow */
   max-width: 94vw;
 }
 
 .time {
   display: inline-flex;
   align-items: baseline;
-  white-space: nowrap;             /* keep "12h" together */
+  white-space: nowrap;
 }
 
 .sep {
   color: rgba(255,255,255,0.65);
   opacity: 0.75;
 }
-
-
-
 
 .meta {
   margin-top: 2px;
@@ -327,7 +353,6 @@
   letter-spacing: clamp(0.03em, 0.6vw, 0.06em);
   color: rgba(255,255,255,0.72);
   text-shadow: 0 0 12px rgba(0,0,0,0.35);
-
   line-height: 1.25;
   word-break: break-word;
 }
@@ -337,11 +362,9 @@
   letter-spacing: clamp(0.10em, 0.9vw, 0.18em);
   text-transform: uppercase;
   color: rgba(255,255,255,0.55);
-
   line-height: 1.25;
   word-break: break-word;
 }
-
 
 /* Creepy fade for date */
 .creepy-fade {
@@ -387,19 +410,8 @@
 }
 
 @media (max-width: 600px) {
-  .bg {
+  .bg-base,
+  .bg-cracked {
     background-position: center 60%;
   }
 }
-
-.glitch-name {
-  transition: opacity 0.25s ease, letter-spacing 0.25s ease;
-}
-
-.glitch-name::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  opacity: 0.12;
-}
-
