@@ -5,7 +5,10 @@
     <div class="bg-base"></div>
 
     <!-- cracked overlay (revealed by progress) -->
-    <div class="bg-cracked" [style.--crackProgress.%]="crackProgress * 100"></div>
+   <div
+  class="bg-cracked"
+  [style.--crackProgress]="crackProgress">
+</div>
 
     <!-- animated fog over everything -->
     <div class="fog fog-back"></div>
