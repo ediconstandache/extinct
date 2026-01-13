@@ -1,6 +1,12 @@
+<!-- countdown.html -->
 <div class="page" [class.shake]="shake">
-  <!-- Background image + overlays -->
+  <!-- BACKGROUND STACK -->
   <div class="bg" aria-hidden="true">
+    <div class="bg-base"></div>
+
+    <!-- cracked overlay (revealed by progress) -->
+    <div class="bg-cracked" [style.--crackProgress.%]="crackProgress * 100"></div>
+
     <!-- animated fog over everything -->
     <div class="fog fog-back"></div>
     <div class="fog fog-front"></div>
