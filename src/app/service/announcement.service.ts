@@ -36,7 +36,7 @@ export class AnnouncementService {
    * Build a correct URL even if app is hosted under a subpath.
    */
   private announcementsUrl(): string {
-    return new URL('assets/announcements.json', document.baseURI).toString();
+    return new URL('announcements.json', document.baseURI).toString();
   }
 
   /**
