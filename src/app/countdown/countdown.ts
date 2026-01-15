@@ -251,7 +251,7 @@ export class Countdown implements OnInit, OnDestroy {
     }, nextStrikeIn);
   }
 
-  private triggerLightningCluster() {
+   private triggerLightningCluster() {
     const flashes = Math.floor(Math.random() * 3) + 2; // 2–4
     const side: 'left' | 'right' = Math.random() < 0.5 ? 'left' : 'right';
     const color: 'red' | 'green' = Math.random() < 0.5 ? 'red' : 'green';
@@ -284,4 +284,18 @@ export class Countdown implements OnInit, OnDestroy {
         if (i < flashes) {
           setTimeout(doFlash, offMs);
         } else {
+          // clear color
           if (side === 'left') this.lightningLeftColor = null;
+          else this.lightningRightColor = null;
+        }
+      }, onMs);
+    };
+
+    doFlash();
+  }
+
+  private triggerShake() {
+    this.shake = true;
+    setTimeout(() => (this.shake = false), 260);
+  }
+}
