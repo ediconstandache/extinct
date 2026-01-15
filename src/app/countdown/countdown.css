@@ -596,3 +596,6 @@
   50%  { transform: translate3d(2%, 1%, 0) rotate(-1deg); }
   100% { transform: translate3d(-2%, -1%, 0) rotate(1deg); }
 }
+
+.broadcast-stack { display: grid; gap: 10px; }
+

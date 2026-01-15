@@ -1,9 +1,6 @@
-// countdown.ts
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AnnouncementService, AnnouncementItem } from '../services/announcement.service';
-
-
+import { AnnouncementService, AnnouncementItem } from '../service/announcement.service';
 
 /**
  * Creates a UTC timestamp from a Romania-local date/time (Europe/Bucharest).
@@ -70,7 +67,6 @@ export class Countdown implements OnInit, OnDestroy {
 
   // =========================
   // CRACK PROGRESS (0..1)
-  // Used in HTML as: [style.--crackProgress.%]="crackProgress * 100"
   // =========================
   crackProgress = 0;
 
@@ -98,6 +94,15 @@ export class Countdown implements OnInit, OnDestroy {
   currentName = '...';
 
   // =========================
+  // ANNOUNCEMENTS
+  // =========================
+  activeAnnouncements: AnnouncementItem[] = [];
+  private announcementsSub: { unsubscribe: () => void } | null = null;
+
+  // Used by *ngFor trackBy
+  trackAnnouncement = (_: number, a: AnnouncementItem) => a.id;
+
+  // =========================
   // TIMERS
   // =========================
   private intervalId: any;
@@ -108,32 +113,12 @@ export class Countdown implements OnInit, OnDestroy {
   // =========================
   // EDITABLE DATES (Romania local time)
   // =========================
-
-  /**
-   * Crack starts at this Romania local time.
-   * Change these values to control when cracking begins.
-   */
   private crackStartUtc = romaniaToUtc(2026, 1, 13, 16, 10, 0);
-
-  /**
-   * Crack completes at this Romania local time (fully cracked).
-   * Change this for your deadline.
-   */
   private crackEndUtc = romaniaToUtc(2026, 1, 13, 16, 40, 0);
-
-  /**
-   * Countdown target (Romania local time). Often same as crackEndUtc.
-   * Change if you want different countdown vs crack deadline.
-   */
   private countdownTargetUtc = romaniaToUtc(2026, 2, 27, 22, 0, 0);
 
-activeAnnouncements: AnnouncementItem[] = [];
-private announcementsSub: any;
+  constructor(private announcements: AnnouncementService) {}
 
-
-constructor(private announcements: AnnouncementService) {}
-
-  
   // =========================
   // LIFECYCLE
   // =========================
@@ -141,10 +126,10 @@ constructor(private announcements: AnnouncementService) {}
     // Initial render
     this.tick();
 
-    this.announcementsSub = this.announcementService
-    .activeAnnouncements$()
-    .subscribe(list => (this.activeAnnouncements = list));
-
+    // Subscribe to active announcements (updates every second, reloads JSON periodically)
+    this.announcementsSub = this.announcements
+      .activeAnnouncements$()
+      .subscribe((list: AnnouncementItem[]) => (this.activeAnnouncements = list));
 
     // Update once per second
     this.intervalId = setInterval(() => this.tick(), 1000);
@@ -163,20 +148,20 @@ constructor(private announcements: AnnouncementService) {}
     clearTimeout(this.glitchTimeoutId);
     clearTimeout(this.lightningTimeoutId);
     clearInterval(this.nameIntervalId);
-    
-  if (this.announcementsSub) this.announcementsSub.unsubscribe();
+
+    this.announcementsSub?.unsubscribe();
   }
 
   formatWindow(a: AnnouncementItem) {
-  return this.announcementService.formatWindow(a);
-}
+    return this.announcements.formatWindow(a);
+  }
+
   // =========================
   // MAIN TICK
   // =========================
   private tick() {
     this.updateCountdown();
     this.updateCrackProgress();
-  
   }
 
   // =========================
@@ -188,7 +173,6 @@ constructor(private announcements: AnnouncementService) {}
     const end = this.crackEndUtc;
 
     if (end <= start) {
-      // misconfigured => snap done
       this.crackProgress = 1;
       return;
     }
@@ -300,30 +284,4 @@ constructor(private announcements: AnnouncementService) {}
         if (i < flashes) {
           setTimeout(doFlash, offMs);
         } else {
-          // clear color
           if (side === 'left') this.lightningLeftColor = null;
-          else this.lightningRightColor = null;
-        }
-      }, onMs);
-    };
-
-    doFlash();
-  }
-
-  private triggerShake() {
-    this.shake = true;
-    setTimeout(() => (this.shake = false), 260);
-  }
-
-
-private formatLocal(iso: string) {
-  const d = new Date(iso);
-  // show as Romania-style day/month hour:minute (in user's browser locale)
-  return d.toLocaleString('ro-RO', {
-    day: '2-digit',
-    month: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit'
-  });
-}
-}
