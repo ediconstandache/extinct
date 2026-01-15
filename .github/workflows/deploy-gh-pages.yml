@@ -54,5 +54,5 @@ jobs:
           publish_dir: dist/extinct/browser
           #
           # Optional: set your custom domain (creates CNAME in gh-pages branch):
-          # cname: extinct.ro
+          cname: extinct.ro
 
