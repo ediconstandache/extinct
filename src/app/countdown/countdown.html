@@ -36,6 +36,38 @@
 
   <!-- Foreground -->
   <div class="content">
+    <div class="broadcast-wrap" *ngIf="activeAnnouncements.length > 0">
+  <div
+    class="broadcast"
+    [class.red]="activeAnnouncements[0].severity === 'red'"
+    [class.green]="activeAnnouncements[0].severity === 'green'">
+
+    <div class="broadcast-top">
+      <div class="broadcast-badge">BROADCAST</div>
+      <div class="broadcast-title">{{ activeAnnouncements[0].title }}</div>
+    </div>
+
+    <div class="broadcast-body">
+      <div class="broadcast-msg">
+        {{ activeAnnouncements[0].message }}
+      </div>
+
+      <a
+        class="broadcast-link"
+        [href]="activeAnnouncements[0].url"
+        target="_blank"
+        rel="noopener">
+        {{ activeAnnouncements[0].label || 'ACCESS' }}
+      </a>
+
+      <div class="broadcast-time">
+        ACTIVE: {{ activeWindowText }}
+      </div>
+    </div>
+
+    <div class="broadcast-noise" aria-hidden="true"></div>
+  </div>
+</div>
     <div class="title-wrapper">
       <div class="title glitch-name">
         GET READY {{ currentName }}

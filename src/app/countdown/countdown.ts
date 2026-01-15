@@ -1,6 +1,8 @@
 // countdown.ts
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { AnnouncementService, AnnouncementItem, AnnouncementsConfig } from '../service/announcement.service';
+
 
 /**
  * Creates a UTC timestamp from a Romania-local date/time (Europe/Bucharest).
@@ -124,12 +126,26 @@ export class Countdown implements OnInit, OnDestroy {
    */
   private countdownTargetUtc = romaniaToUtc(2026, 2, 27, 22, 0, 0);
 
+
+  activeAnnouncements: AnnouncementItem[] = [];
+activeWindowText = '';
+private announcementsCfg: AnnouncementsConfig | null = null;
+
+constructor(private announcements: AnnouncementService) {}
+
+  
   // =========================
   // LIFECYCLE
   // =========================
   ngOnInit() {
     // Initial render
     this.tick();
+
+      this.announcements.loadConfig().subscribe(cfg => {
+    this.announcementsCfg = cfg;
+    this.updateAnnouncements(); // immediate
+  });
+
 
     // Update once per second
     this.intervalId = setInterval(() => this.tick(), 1000);
@@ -156,6 +172,8 @@ export class Countdown implements OnInit, OnDestroy {
   private tick() {
     this.updateCountdown();
     this.updateCrackProgress();
+    
+  this.updateAnnouncements();
   }
 
   // =========================
@@ -293,4 +311,32 @@ export class Countdown implements OnInit, OnDestroy {
     this.shake = true;
     setTimeout(() => (this.shake = false), 260);
   }
+
+  private updateAnnouncements() {
+  if (!this.announcementsCfg) return;
+
+  const now = new Date();
+  const active = this.announcements.activeNow(this.announcementsCfg, now);
+
+  // show the first one (or you can rotate)
+  this.activeAnnouncements = active.slice(0, 1);
+
+  if (this.activeAnnouncements.length) {
+    const a = this.activeAnnouncements[0];
+    this.activeWindowText = `${this.formatLocal(a.start)} → ${this.formatLocal(a.end)}`;
+  } else {
+    this.activeWindowText = '';
+  }
+}
+
+private formatLocal(iso: string) {
+  const d = new Date(iso);
+  // show as Romania-style day/month hour:minute (in user's browser locale)
+  return d.toLocaleString('ro-RO', {
+    day: '2-digit',
+    month: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+}
 }
