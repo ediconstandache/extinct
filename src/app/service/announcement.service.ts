@@ -30,7 +30,7 @@ export class AnnouncementService {
   loadConfig() {
     const bust = Date.now();
     return this.http
-      .get<AnnouncementsConfig>(`assets/announcements.json?v=${bust}`)
+      .get<AnnouncementsConfig>(`announcements.json?v=${bust}`)
       .pipe(
         catchError(() => of({ items: [] } as AnnouncementsConfig))
       );
