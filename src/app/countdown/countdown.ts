@@ -87,9 +87,9 @@ export class Countdown implements OnInit, OnDestroy {
   // NAMES
   // =========================
   names: string[] = [
-    'Tudor','Roberta','Alexia','Alin','Gelu','Maria','Mary','Raluca','Petru','Anca',
-    'Andrei','Andrei','Luca','Victor','Eduard','Andrei','Anastasia','Ilinca','Ilinca',
-    'Lucia','Mihai','Diana','Tiberiu','Maria','Stefan','Vlad','Ilinca','Andrada','Laura'
+    'Tudor','Roberta','Alexia','MariaI','Mary','Raluca',
+    'Andrei','Jerry','Luca','Victor','Eduard','Lapu','Anastasia','Palinca','TIlinca',
+    'Lucia','Mihai','Diana','Tiberiu','Maria','Stefan','Vlad','MIlinca','Andrada','Laura'
   ];
   currentName = '...';
 
