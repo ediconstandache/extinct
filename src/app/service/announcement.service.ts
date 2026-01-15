@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { map, catchError, of } from 'rxjs';
+
+import { Observable, timer, of, combineLatest } from 'rxjs';
+import { switchMap, catchError, map, shareReplay, startWith } from 'rxjs/operators';
 
 export type AnnouncementSeverity = 'red' | 'green' | 'white';
 
@@ -10,34 +12,35 @@ export interface AnnouncementItem {
   message?: string;
   url: string;
   label?: string;
-  start: string; // ISO
-  end: string;   // ISO
+  start: string; // ISO with offset recommended (e.g. 2026-01-15T18:00:00+02:00)
+  end: string;   // ISO with offset recommended
   severity?: AnnouncementSeverity;
+  priority?: number; // optional: higher appears first
 }
 
 export interface AnnouncementsConfig {
-  timezone?: string;
   items: AnnouncementItem[];
 }
 
 @Injectable({ providedIn: 'root' })
 export class AnnouncementService {
-
-    // How often to re-fetch announcements.json (ms)
+  // How often to re-fetch announcements.json
   private readonly REFRESH_MS = 30_000;
 
-  // How often to recompute “active now” (ms)
+  // How often to recompute “active now”
   private readonly TICK_MS = 1_000;
-  
+
   constructor(private http: HttpClient) {}
 
+  /**
+   * Build a correct URL even if app is hosted under a subpath.
+   */
   private announcementsUrl(): string {
-    return new URL('announcements.json', document.baseURI).toString();
+    return new URL('assets/announcements.json', document.baseURI).toString();
   }
 
-  
   /**
-   * Poll the JSON periodically (cache-busting included).
+   * Poll JSON periodically. Cache-busting avoids stale GitHub Pages/CDN caches.
    */
   private config$(): Observable<AnnouncementsConfig> {
     return timer(0, this.REFRESH_MS).pipe(
@@ -47,14 +50,13 @@ export class AnnouncementService {
           catchError(() => of({ items: [] } as AnnouncementsConfig))
         );
       }),
-      // share the latest config across subscribers
       shareReplay({ bufferSize: 1, refCount: true })
     );
   }
 
   /**
-   * Emits active announcements (possibly multiple), re-evaluated every second,
-   * and refreshed from server every REFRESH_MS.
+   * Emits the list of currently active announcements (can be multiple).
+   * Re-evaluates every second and refreshes from server every REFRESH_MS.
    */
   activeAnnouncements$(): Observable<AnnouncementItem[]> {
     const tick$ = timer(0, this.TICK_MS).pipe(startWith(0));
@@ -63,14 +65,14 @@ export class AnnouncementService {
       map(([cfg]) => {
         const now = Date.now();
 
-        const active = (cfg.items ?? []).filter(i => {
+        const active = (cfg.items ?? []).filter((i: AnnouncementItem) => {
           const start = new Date(i.start).getTime();
           const end = new Date(i.end).getTime();
           return Number.isFinite(start) && Number.isFinite(end) && now >= start && now <= end;
         });
 
-        // Sort: priority desc, then soonest ending, then title
-        active.sort((a, b) => {
+        // Sort: priority desc, then earliest ending, then title
+        active.sort((a: AnnouncementItem, b: AnnouncementItem) => {
           const pa = a.priority ?? 0;
           const pb = b.priority ?? 0;
           if (pb !== pa) return pb - pa;
@@ -87,11 +89,13 @@ export class AnnouncementService {
     );
   }
 
+  /**
+   * Display the active window in Romania time (Europe/Bucharest)
+   */
   formatWindow(a: AnnouncementItem): string {
     const start = new Date(a.start);
     const end = new Date(a.end);
 
-    // Display in Romania time explicitly (optional but often desired)
     const opts: Intl.DateTimeFormatOptions = {
       timeZone: 'Europe/Bucharest',
       day: '2-digit',
