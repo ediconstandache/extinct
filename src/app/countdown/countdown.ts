@@ -113,8 +113,8 @@ export class Countdown implements OnInit, OnDestroy {
   // =========================
   // EDITABLE DATES (Romania local time)
   // =========================
-  private crackStartUtc = romaniaToUtc(2026, 1, 13, 16, 10, 0);
-  private crackEndUtc = romaniaToUtc(2026, 1, 13, 16, 40, 0);
+  private crackStartUtc = romaniaToUtc(2026, 1, 15, 19, 25, 0);
+  private crackEndUtc = romaniaToUtc(2026, 1, 15, 23, 59, 0);
   private countdownTargetUtc = romaniaToUtc(2026, 2, 27, 22, 0, 0);
 
   constructor(private announcements: AnnouncementService) {}

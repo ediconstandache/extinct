@@ -597,5 +597,24 @@
   100% { transform: translate3d(-2%, -1%, 0) rotate(1deg); }
 }
 
+@media (max-width: 600px) {
+  .broadcast-wrap {
+    top: clamp(16px, 4vh, 48px);
+    right: auto;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(92vw, 420px);
+  }
+
+    .broadcast {
+    animation: broadcastFloat 7s ease-in-out infinite;
+  }
+
+  .broadcast-msg {
+    font-size: 11px;
+  }
+  
+}
+
 .broadcast-stack { display: grid; gap: 10px; }
 
