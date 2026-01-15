@@ -1,7 +1,8 @@
 // countdown.ts
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AnnouncementService, AnnouncementItem, AnnouncementsConfig } from '../service/announcement.service';
+import { AnnouncementService, AnnouncementItem } from '../services/announcement.service';
+
 
 
 /**
@@ -126,10 +127,9 @@ export class Countdown implements OnInit, OnDestroy {
    */
   private countdownTargetUtc = romaniaToUtc(2026, 2, 27, 22, 0, 0);
 
+activeAnnouncements: AnnouncementItem[] = [];
+private announcementsSub: any;
 
-  activeAnnouncements: AnnouncementItem[] = [];
-activeWindowText = '';
-private announcementsCfg: AnnouncementsConfig | null = null;
 
 constructor(private announcements: AnnouncementService) {}
 
@@ -141,10 +141,9 @@ constructor(private announcements: AnnouncementService) {}
     // Initial render
     this.tick();
 
-      this.announcements.loadConfig().subscribe(cfg => {
-    this.announcementsCfg = cfg;
-    this.updateAnnouncements(); // immediate
-  });
+    this.announcementsSub = this.announcementService
+    .activeAnnouncements$()
+    .subscribe(list => (this.activeAnnouncements = list));
 
 
     // Update once per second
@@ -164,16 +163,20 @@ constructor(private announcements: AnnouncementService) {}
     clearTimeout(this.glitchTimeoutId);
     clearTimeout(this.lightningTimeoutId);
     clearInterval(this.nameIntervalId);
+    
+  if (this.announcementsSub) this.announcementsSub.unsubscribe();
   }
 
+  formatWindow(a: AnnouncementItem) {
+  return this.announcementService.formatWindow(a);
+}
   // =========================
   // MAIN TICK
   // =========================
   private tick() {
     this.updateCountdown();
     this.updateCrackProgress();
-    
-  this.updateAnnouncements();
+  
   }
 
   // =========================
@@ -312,22 +315,6 @@ constructor(private announcements: AnnouncementService) {}
     setTimeout(() => (this.shake = false), 260);
   }
 
-  private updateAnnouncements() {
-  if (!this.announcementsCfg) return;
-
-  const now = new Date();
-  const active = this.announcements.activeNow(this.announcementsCfg, now);
-
-  // show the first one (or you can rotate)
-  this.activeAnnouncements = active.slice(0, 1);
-
-  if (this.activeAnnouncements.length) {
-    const a = this.activeAnnouncements[0];
-    this.activeWindowText = `${this.formatLocal(a.start)} → ${this.formatLocal(a.end)}`;
-  } else {
-    this.activeWindowText = '';
-  }
-}
 
 private formatLocal(iso: string) {
   const d = new Date(iso);
