@@ -36,7 +36,7 @@
 
   <!-- Foreground -->
   <div class="content">
-   <div class="broadcast-wrap" *ngIf="activeAnnouncements.length > 0">
+  <div class="broadcast-wrap" *ngIf="activeAnnouncements.length > 0">
   <div class="broadcast-stack">
     <div
       class="broadcast"
@@ -52,11 +52,7 @@
       <div class="broadcast-body">
         <div class="broadcast-msg" *ngIf="a.message">{{ a.message }}</div>
 
-        <a
-          class="broadcast-link"
-          [href]="a.url"
-          target="_blank"
-          rel="noopener">
+        <a class="broadcast-link" [href]="a.url" target="_blank" rel="noopener">
           {{ a.label || 'ACCESS' }}
         </a>
 
@@ -69,7 +65,6 @@
     </div>
   </div>
 </div>
-
     <div class="title-wrapper">
       <div class="title glitch-name">
         GET READY {{ currentName }}
