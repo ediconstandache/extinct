@@ -3,12 +3,12 @@
   "items": [
     {
       "id": "gate-1",
-      "title": "TEAM UPDATES",
-      "message": "Enjoy your teams while they’re still valid. Things are changing faster than expected.",
-      "url": "https://www.youtube.com/watch?v=CX45pYvxDiA&list=RDCX45pYvxDiA&start_radio=1",
+      "title": "DAILY OR NOT?",
+      "message": "what's that?",
+      "url": "https://www.nytimes.com/games/create/wordle/3SNbg2WKpHU4eoLo9kaR6mMNY915tU3l8fsvsfJosL5wzjUR-G67U4MJ445_zyNPh3eWa2xnll16",
       "label": "Knock Knock",
-      "start": "2026-01-15T18:29:00+02:00",
-      "end": "2026-01-15T23:30:59+02:00",
+      "start": "2026-01-16T12:29:00+02:00",
+      "end": "2026-01-16T23:30:59+02:00",
       "severity": "red"
     }
   ]
